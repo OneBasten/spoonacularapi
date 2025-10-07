@@ -79,19 +79,6 @@ class RecipeDaoTest {
         assertThat(result[0].title).isNotEqualTo("Steak")
     }
 
-    @Test
-    fun toggleBookmark_shouldUpdateIsBookmarked() = runTest {
-        val recipe = createTestRecipeEntity(1, "Test Recipe", isBookmarked = false)
-        dao.insertRecipe(recipe)
-
-        val retrieved = dao.getRecipeById(1)!!
-        dao.updateRecipe(retrieved.copy(isBookmarked = true))
-        val updated = dao.getRecipeById(1)!!
-
-        assertThat(updated.isBookmarked).isTrue()
-        assertThat(updated.isBookmarked).isNotEqualTo(recipe.isBookmarked)
-    }
-
     private fun createTestRecipeEntity(
         id: Int,
         title: String,

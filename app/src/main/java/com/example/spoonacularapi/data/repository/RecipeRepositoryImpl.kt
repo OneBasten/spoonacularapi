@@ -33,61 +33,6 @@ class RecipeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun refreshRecipes(categoryTag: String?) {
-        if (!networkUtils.isInternetAvailable()) {
-            throw Exception("No internet connection")
-        }
-
-        try {
-            val response = api.getRandomRecipes(
-                apiKey = BuildConfig.API_KEY,
-                tags = categoryTag
-            )
-            val recipes = response.recipes.map { it.toEntity(gson) }
-            dao.insertRecipes(recipes)
-
-            val oneDayAgo = System.currentTimeMillis() - (24 * 60 * 60 * 1000)
-            dao.deleteOldRecipes(oneDayAgo)
-
-        } catch (e: HttpException) {
-            when (e.code()) {
-                402 -> throw Exception("API лимит исчерпан. Используются сохраненные данные.")
-                401 -> throw Exception("Неверный API ключ")
-                429 -> throw Exception("Слишком много запросов")
-                else -> throw Exception("Ошибка сервера: ${e.code()}")
-            }
-        } catch (e: Exception) {
-            throw Exception("Failed to refresh recipes: ${e.message}")
-        }
-    }
-
-    override suspend fun searchRecipesOnline(query: String, categoryTag: String?): List<Recipe> {
-        if (!networkUtils.isInternetAvailable()) {
-            throw Exception("No internet connection")
-        }
-
-        try {
-            val response = api.searchRecipes(
-                query = query,
-                apiKey = BuildConfig.API_KEY,
-                type = categoryTag
-            )
-            val recipes = response.results.map { it.toEntity(gson) }
-            dao.insertRecipes(recipes)
-            return recipes.map { it.toRecipe(gson) }
-
-        } catch (e: HttpException) {
-            when (e.code()) {
-                402 -> throw Exception("API лимит исчерпан. Используются сохраненные данные.")
-                401 -> throw Exception("Неверный API ключ")
-                429 -> throw Exception("Слишком много запросов")
-                else -> throw Exception("Ошибка сервера: ${e.code()}")
-            }
-        } catch (e: Exception) {
-            throw Exception("Search failed: ${e.message}")
-        }
-    }
-
 
     override fun getRecipesPaged(): Flow<PagingData<Recipe>> {
         return Pager(

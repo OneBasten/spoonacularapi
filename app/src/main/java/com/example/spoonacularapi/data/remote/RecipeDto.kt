@@ -16,11 +16,6 @@ data class RecipeDto(
 )
 
 @JsonClass(generateAdapter = true)
-data class RecipesResponse(
-    @Json(name = "recipes") val recipes: List<RecipeDto>
-)
-
-@JsonClass(generateAdapter = true)
 data class RecipesSearchResponse(
     @Json(name = "results") val results: List<RecipeDto>,
     @Json(name = "offset") val offset: Int,
