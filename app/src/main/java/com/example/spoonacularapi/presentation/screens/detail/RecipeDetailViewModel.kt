@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.spoonacularapi.domain.usecase.GetRecipeDetailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -24,7 +25,7 @@ class RecipeDetailViewModel @Inject constructor(
     val error: StateFlow<String?> = _error
 
     fun loadRecipe(recipeId: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO){
             _isLoading.value = true
             _error.value = null
             try {
